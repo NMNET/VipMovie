@@ -12,6 +12,15 @@ public class SimpleCallLog {
     private String duration;
     private String date;
     private String place;
+    private int times;
+
+    public int getTimes() {
+        return times;
+    }
+
+    public void setTimes(int times) {
+        this.times = times;
+    }
 
     public String getPlace() {
         return place;

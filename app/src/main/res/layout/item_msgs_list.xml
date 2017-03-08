@@ -30,10 +30,10 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="8dp"
             android:maxLines="1"
-            android:maxLength="15"
+            android:maxEms="14"
             android:ellipsize="end"
             android:textSize="13sp"
-            tools:text="name"/>
+            tools:text="namesdmnfsnmdbnrwemgrjhwehjhndbgfnsmdfbvgm"/>
 
     </LinearLayout>
 

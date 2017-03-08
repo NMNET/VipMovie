@@ -22,8 +22,17 @@ public class BaseActionBarActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base_action_bar);
-
+        initData();
         initView();
+        findViews();
+    }
+
+    protected void initData() {
+
+    }
+
+    protected void findViews() {
+
     }
 
     private void initView() {

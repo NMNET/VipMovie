@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
     <uses-permission android:name="android.permission.READ_SMS"/>
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <!--安卓4.4以上无法编辑短信内容-->
+    <!--<uses-permission android:name="android.permission.WRITE_SMS"/>-->
     <uses-permission android:name="android.permission.SEND_SMS"/>
     <uses-permission android:name="android.permission.READ_CALL_LOG"/>
     <uses-permission android:name="android.permission.CALL_PHONE"/>
@@ -27,12 +29,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:theme="@style/AppThemeNOActionBar"
             android:name=".ui.activity.MyCenterActivity"
+            android:theme="@style/AppThemeNOActionBar"
             />
         <activity
+            android:name=".ui.activity.ContactDetailActivity"
             android:theme="@style/AppThemeNOActionBar"
-            android:name=".ui.activity.ContactDetail"
+            />
+        <activity
+            android:name=".ui.activity.EditContactActivity"
+            android:theme="@style/AppThemeNOActionBar"
             />
     </application>
 

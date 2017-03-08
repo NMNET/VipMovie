@@ -3,13 +3,10 @@ package com.nmnet.vipmovie.ui.fragment;
 
 import android.Manifest;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +18,9 @@ import com.nmnet.parentlib.ui.fragment.ParentBaseSwipeFragment;
 import com.nmnet.parentlib.utils.ViewHolderUtil;
 import com.nmnet.vipmovie.R;
 import com.nmnet.vipmovie.bean.SimpleContact;
-import com.nmnet.vipmovie.ui.activity.ContactDetail;
+import com.nmnet.vipmovie.ui.activity.ContactDetailActivity;
 import com.nmnet.vipmovie.ui.activity.MyCenterActivity;
+import com.nmnet.vipmovie.utils.ContentResolerUtil;
 import com.nmnet.vipmovie.utils.PermissionUtil;
 
 import java.util.ArrayList;
@@ -91,7 +89,7 @@ public class ThirdFragment extends ParentBaseSwipeFragment implements View.OnCli
 
             @Override
             protected void onBindItemHolder(View view) {
-                SimpleContact contact = (SimpleContact) view.getTag();
+                final SimpleContact contact = (SimpleContact) view.getTag();
                 TextView tvContactName = (TextView) ViewHolderUtil.getView(view, R.id.tv_contact_name);
                 TextView tvContactPhone = (TextView) ViewHolderUtil.getView(view, R.id.tv_contact_phone);
                 tvContactName.setText(contact.getName());
@@ -100,7 +98,8 @@ public class ThirdFragment extends ParentBaseSwipeFragment implements View.OnCli
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(getActivity(), ContactDetail.class);
+                        Intent intent = new Intent(getActivity(), ContactDetailActivity.class);
+                        intent.putExtra("contact", contact);
                         startActivity(intent);
                     }
                 });
@@ -113,50 +112,13 @@ public class ThirdFragment extends ParentBaseSwipeFragment implements View.OnCli
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ArrayList<SimpleContact> contacts = readContact();
+                ArrayList<SimpleContact> contacts = ContentResolerUtil.getAllContacts(getContext());
                 Message msg = new Message();
                 msg.what = CONTACTS;
                 msg.obj = contacts;
-                Log.d("ThirdFragment", "contacts:" + contacts);
                 mHandler.sendMessage(msg);
             }
         }).run();
-    }
-
-    private ArrayList<SimpleContact> readContact() {
-        // 首先,从raw_contacts中读取联系人的id("contact_id")
-        // 其次, 根据contact_id从data表中查询出相应的电话号码和联系人名称
-        // 然后,根据mimetype来区分哪个是联系人,哪个是电话号码
-        Uri rawContactsUri = Uri.parse("content://com.android.contacts/raw_contacts");
-        Uri dataUri = Uri.parse("content://com.android.contacts/data");
-        ArrayList<SimpleContact> list = new ArrayList<>();
-        // 从raw_contacts中读取联系人的id("contact_id")
-        Cursor rawContactsCursor = getContext().getContentResolver().query(rawContactsUri, new String[]{"contact_id"}, null, null, null);
-        if (rawContactsCursor != null) {
-            while (rawContactsCursor.moveToNext()) {
-                String contactId = rawContactsCursor.getString(0);
-                // System.out.println(contactId);
-                // 根据contact_id从data表中查询出相应的电话号码和联系人名称, 实际上查询的是视图view_data
-                Cursor dataCursor = getContext().getContentResolver().query(dataUri, new String[]{"data1", "mimetype"}, "contact_id=?",
-                        new String[]{contactId}, null);
-                if (dataCursor != null) {
-                    SimpleContact contact = new SimpleContact();
-                    while (dataCursor.moveToNext()) {
-                        String data1 = dataCursor.getString(0);
-                        String mimetype = dataCursor.getString(1);
-                        if ("vnd.android.cursor.item/phone_v2".equals(mimetype)) {
-                            contact.setPhone(data1);
-                        } else if ("vnd.android.cursor.item/name".equals(mimetype)) {
-                            contact.setName(data1);
-                        }
-                    }
-                    list.add(contact);
-                    dataCursor.close();
-                }
-            }
-            rawContactsCursor.close();
-        }
-        return list;
     }
 
     @Override
