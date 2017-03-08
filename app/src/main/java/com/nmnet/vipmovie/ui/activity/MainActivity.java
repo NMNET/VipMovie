@@ -16,13 +16,13 @@ public class MainActivity extends ParentBaseMainActivity {
 
     @Override
     protected int[] setTabIcons() {
-        return new int[]{R.mipmap.ic_bnb_part1, R.mipmap.ic_bnb_part2,
-                R.mipmap.ic_bnb_part3, R.mipmap.ic_bnb_part4};
+        return new int[]{R.mipmap.ic_bnb_part1, R.mipmap.ic_bnb_part3,
+                R.mipmap.ic_bnb_part4, R.mipmap.ic_bnb_part2};
     }
 
     @Override
     protected String[] setTabStrings() {
-        return new String[]{"PHONE", "MSM", "SYNC", "CONT"};
+        return new String[]{"拨号", "记录", "联系人", "短信"};
     }
 
     @Override

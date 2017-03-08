@@ -1,20 +1,44 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="com.nmnet.vipmovie.ui.fragment.FirstFragment">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="com.nmnet.vipmovie.ui.fragment.FirstFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment"/>
+        android:layout_height="72dp"
+        android:background="@color/colorPrimary"
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:text="拨号器"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        />
 
-    <Button
-        android:id="@+id/btn"
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/tv_call_number"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginRight="24dp"
+            android:gravity="center_vertical|right"
+            android:maxLength="20"
+            android:maxLines="1"
+            android:textSize="24sp"
+            tools:text="15678904567"
+            />
+    </android.support.v7.widget.CardView>
+
+    <com.nmnet.vipmovie.ui.widget.CallKeyboradView
+        android:id="@+id/ckv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:text="get"/>
-
-</FrameLayout>
+        android:layout_marginTop="12dp"
+        />
+</LinearLayout>
