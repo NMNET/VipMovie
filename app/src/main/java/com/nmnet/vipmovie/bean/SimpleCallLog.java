@@ -1,10 +1,13 @@
 package com.nmnet.vipmovie.bean;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by NMNET on 2017/3/8 0008.
  */
 
-public class SimpleCallLog {
+public class SimpleCallLog implements Parcelable {
 
     private String name;
     private String phone;
@@ -80,4 +83,46 @@ public class SimpleCallLog {
                 ", date='" + date + '\'' +
                 '}';
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.name);
+        dest.writeString(this.phone);
+        dest.writeString(this.type);
+        dest.writeString(this.duration);
+        dest.writeString(this.date);
+        dest.writeString(this.place);
+        dest.writeInt(this.times);
+    }
+
+    public SimpleCallLog() {
+    }
+
+    protected SimpleCallLog(Parcel in) {
+        this.name = in.readString();
+        this.phone = in.readString();
+        this.type = in.readString();
+        this.duration = in.readString();
+        this.date = in.readString();
+        this.place = in.readString();
+        this.times = in.readInt();
+    }
+
+    public static final Parcelable.Creator<SimpleCallLog> CREATOR = new Parcelable.Creator<SimpleCallLog>() {
+        @Override
+        public SimpleCallLog createFromParcel(Parcel source) {
+            return new SimpleCallLog(source);
+        }
+
+        @Override
+        public SimpleCallLog[] newArray(int size) {
+            return new SimpleCallLog[size];
+        }
+    };
 }

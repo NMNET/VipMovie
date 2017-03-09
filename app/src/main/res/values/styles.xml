@@ -16,4 +16,8 @@
         <item name="android:textColorPrimary">@color/primaryText</item>
     </style>
 
+    <style name="AppThemeFullScreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
 </resources>

@@ -51,6 +51,9 @@ public class ContentResolerUtil {
 				String contactId = rawContactsCursor.getString(0);
 				// System.out.println(contactId);
 				// 根据contact_id从data表中查询出相应的电话号码和联系人名称, 实际上查询的是视图view_data
+				if (contactId == null) {
+					continue;
+				}
 				Cursor dataCursor = context.getContentResolver().query(dataUri, new String[]{"data1", "mimetype"}, "contact_id=?",
 						new String[]{contactId}, null);
 				if (dataCursor != null) {

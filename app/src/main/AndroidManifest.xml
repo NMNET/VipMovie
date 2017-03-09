@@ -21,13 +21,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activity.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+        <activity android:name=".ui.activity.MainActivity"/>
 
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
         <activity
             android:name=".ui.activity.MyCenterActivity"
             android:theme="@style/AppThemeNOActionBar"
@@ -40,6 +35,22 @@
             android:name=".ui.activity.EditContactActivity"
             android:theme="@style/AppThemeNOActionBar"
             />
+        <activity
+            android:name=".ui.activity.CallLogDetailActivity"
+            android:theme="@style/AppThemeNOActionBar"
+            />
+        <activity
+            android:name=".ui.activity.LoginActivity"
+            android:theme="@style/AppThemeNOActionBar"
+            />
+        <activity
+            android:name=".ui.activity.SplashActivity"
+            android:theme="@style/AppThemeFullScreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

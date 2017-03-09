@@ -26,6 +26,7 @@ import com.nmnet.vipmovie.bean.SimpleSms;
 import com.nmnet.vipmovie.utils.ContentResolerUtil;
 import com.nmnet.vipmovie.utils.PermissionUtil;
 
+import java.security.PublicKey;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,94 +37,111 @@ import java.util.List;
  */
 public class ForthFragment extends ParentBaseSwipeFragment {
 
-	private static final int SMGS = 11;
-	private RecyclerView mRvMsg;
-	private TextView mTvSearchMsg;
-	private Handler mHandler;
+    private static final int SMGS = 11;
+    private RecyclerView mRvMsg;
+    private TextView mTvSearchMsg;
+    private Handler mHandler;
 
-	@Override
-	public View setCustomerContent(FrameLayout frameLayout) {
-		return LayoutInflater.from(getContext()).inflate(R.layout.fragment_forth, frameLayout, false);
-	}
+    @Override
+    public View setCustomerContent(FrameLayout frameLayout) {
+        return LayoutInflater.from(getContext()).inflate(R.layout.fragment_forth, frameLayout, false);
+    }
 
-	@Override
-	protected void findViews(FrameLayout flCustomerContent) {
-		super.findViews(flCustomerContent);
-		mRvMsg = (RecyclerView) flCustomerContent.findViewById(R.id.rv_msg);
-		mTvSearchMsg = (TextView) flCustomerContent.findViewById(R.id.tv_search_msg);
+    @Override
+    protected void findViews(FrameLayout flCustomerContent) {
+        super.findViews(flCustomerContent);
+        mRvMsg = (RecyclerView) flCustomerContent.findViewById(R.id.rv_msg);
+        mTvSearchMsg = (TextView) flCustomerContent.findViewById(R.id.tv_search_msg);
 
-		handlerResult();
-	}
+        handlerResult();
+    }
 
-	private void handlerResult() {
-		if (mHandler == null) {
-			mHandler = new Handler() {
-				@Override
-				public void handleMessage(Message msg) {
-					super.handleMessage(msg);
-					if (msg.what == SMGS) {
-						ArrayList<SimpleContact> contacts = (ArrayList<SimpleContact>) (msg.obj);
-						mTvSearchMsg.setText("点击搜索" + contacts.size() + "条短信");
-						setRecyclerView(contacts);
-						hideSwipeLoading();
-					}
-				}
-			};
-		}
+    public void holdContacts(List<SimpleSms> simpleSmses) {
+        for (SimpleSms simpleSmse : simpleSmses) {
+            simpleSmse.setTimes(1);
+        }
+        for (int i = 0; i < simpleSmses.size(); i++)  //外循环是循环的次数
+        {
+            for (int j = simpleSmses.size() - 1; j > i; j--)  //内循环是 外循环一次比较的次数
+            {
+                if (simpleSmses.get(i).getPhone().equals(simpleSmses.get(j).getPhone())) {
+                    simpleSmses.get(i).setTimes(simpleSmses.get(i).getTimes() + 1);
+                    simpleSmses.remove(j);
+                }
+            }
+        }
+    }
 
-		PermissionUtil.check(getActivity(), new String[]{Manifest.permission.READ_SMS, Manifest.permission.WRITE_CONTACTS}, 1, new PermissionUtil.ICall() {
-			@Override
-			public void call() {
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						List<SimpleSms> simpleSmses = ContentResolerUtil.getAllMsgs(getContext());
-						Message msg = new Message();
-						msg.what = SMGS;
-						msg.obj = simpleSmses;
-						mHandler.sendMessage(msg);
-					}
-				}).run();
-			}
-		});
+    private void handlerResult() {
+        if (mHandler == null) {
+            mHandler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    super.handleMessage(msg);
+                    if (msg.what == SMGS) {
+                        ArrayList<SimpleSms> contacts = (ArrayList<SimpleSms>) (msg.obj);
+                        mTvSearchMsg.setText("点击搜索" + contacts.size() + "条短信");
+                        holdContacts(contacts);
+                        setRecyclerView(contacts);
+                        hideSwipeLoading();
+                    }
+                }
+            };
+        }
 
-	}
+        PermissionUtil.check(getActivity(), new String[]{Manifest.permission.READ_SMS, Manifest.permission.WRITE_CONTACTS}, 1, new PermissionUtil.ICall() {
+            @Override
+            public void call() {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<SimpleSms> simpleSmses = ContentResolerUtil.getAllMsgs(getContext());
+                        Message msg = new Message();
+                        msg.what = SMGS;
+                        msg.obj = simpleSmses;
+                        mHandler.sendMessage(msg);
+                    }
+                }).run();
+            }
+        });
 
-	private void setRecyclerView(ArrayList<SimpleContact> contacts) {
-		mRvMsg.setLayoutManager(new LinearLayoutManager(getContext()));
-		mRvMsg.setAdapter(new GeneRecycleAdapter(contacts, getContext()) {
-			@Override
-			protected View onCreateItemHolder(ViewGroup viewGroup) {
-				return LayoutInflater.from(getContext()).inflate(R.layout.item_msgs_list, viewGroup, false);
-			}
+    }
 
-			@Override
-			protected void onBindItemHolder(View view) {
-				final SimpleSms simpleSms = (SimpleSms) view.getTag();
-				TextView tvMsgName = (TextView) ViewHolderUtil.getView(view, R.id.tv_msg_name);
-				TextView tvMsgBody = (TextView) ViewHolderUtil.getView(view, R.id.tv_msg_body);
-				TextView tvMsgStatus = (TextView) ViewHolderUtil.getView(view, R.id.tv_msg_status);
-				TextView tvMsgTime = (TextView) ViewHolderUtil.getView(view, R.id.tv_msg_time);
+    private void setRecyclerView(ArrayList<SimpleSms> msgs) {
+        mRvMsg.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRvMsg.setAdapter(new GeneRecycleAdapter(msgs, getContext()) {
+            @Override
+            protected View onCreateItemHolder(ViewGroup viewGroup) {
+                return LayoutInflater.from(getContext()).inflate(R.layout.item_msgs_list, viewGroup, false);
+            }
 
-				tvMsgName.setText(simpleSms.getName());
-				tvMsgBody.setText(simpleSms.getContent());
-				tvMsgStatus.setText(simpleSms.getStatus());
-				tvMsgTime.setText(simpleSms.getTime());
+            @Override
+            protected void onBindItemHolder(View view) {
+                final SimpleSms simpleSms = (SimpleSms) view.getTag();
+                TextView tvMsgName = (TextView) ViewHolderUtil.getView(view, R.id.tv_msg_name);
+                TextView tvMsgBody = (TextView) ViewHolderUtil.getView(view, R.id.tv_msg_body);
+                TextView tvMsgStatus = (TextView) ViewHolderUtil.getView(view, R.id.tv_msg_status);
+                TextView tvMsgTime = (TextView) ViewHolderUtil.getView(view, R.id.tv_msg_time);
 
-				view.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						ContentResolerUtil.doSendSMS(getContext(), simpleSms.getPhone(), "");
-					}
-				});
-			}
-		});
-	}
+                tvMsgName.setText(simpleSms.getName() + "(" + simpleSms.getTimes() + ")");
+                tvMsgBody.setText(simpleSms.getContent());
+                tvMsgStatus.setText(simpleSms.getStatus());
+                tvMsgTime.setText(simpleSms.getTime());
 
-	@Override
-	public void onSwipeRefresh() {
-		super.onSwipeRefresh();
-		handlerResult();
-	}
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ContentResolerUtil.doSendSMS(getContext(), simpleSms.getPhone(), "");
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    public void onSwipeRefresh() {
+        super.onSwipeRefresh();
+        handlerResult();
+    }
 
 }
